@@ -11,6 +11,55 @@ ScamGuard AI is an advanced AI-powered scam message detection platform that leve
 - **Batch Processing Support:** Process datasets efficiently with configurable batch size to respect API quotas.
 - **Modular and Extensible:** Designed for easy enhancement with additional scam detection and processing logic.
 
+```mermaid
+graph TD
+    %% --- User Interface Layer ---
+    subgraph UI [🖥️ Streamlit Frontend]
+        User([👤 User]) --> Mode{Select Mode}
+        Mode -- "Single Input" --> TextInput[📝 Text Area Input]
+        Mode -- "Batch Input" --> CSVInput[📂 Upload CSV File]
+    end
+
+    %% --- Application Logic Layer ---
+    subgraph Logic [⚙️ Processing Pipeline]
+        TextInput --> Analyzer[🚀 Analyze Message]
+        CSVInput --> Iterator["🔄 Iterate Rows (Limit: 1000)"]
+        Iterator --> Analyzer
+    end
+
+    %% --- AI Engine Layer ---
+    subgraph AI [🧠 Gemini 2.5 Flash Engine]
+        Analyzer --> Classify[🔍 Classify Message]
+        Classify -- "Prompt: Scam/Not Scam" --> Gemini1[🤖 Gemini API]
+        
+        Gemini1 --> Decision{Is Scam?}
+        
+        %% Path 1: Scam Detected
+        Decision -- Yes --> TypeDetect[🏷️ Extract Scam Type]
+        TypeDetect -- "Prompt: Phishing/OTP/Reward..." --> Gemini2[🤖 Gemini API]
+        
+        %% Path 2: Explanation (Always runs)
+        Decision -- Any --> Explain[📖 Generate Explanation]
+        Explain -- "Prompt: Explain why..." --> Gemini3[🤖 Gemini API]
+    end
+
+    %% --- Output Layer ---
+    subgraph Output [📊 Results Display]
+        Gemini2 --> ResultAggregator[📝 Compile Results]
+        Gemini3 --> ResultAggregator
+        
+        ResultAggregator --> DisplaySingle["Show Classification, Type & Reason"]
+        ResultAggregator --> DisplayBatch["Show DataFrame & Download CSV"]
+    end
+
+    %% Styling
+    style Gemini1 fill:#E1D5E7,stroke:#9673A6,stroke-width:2px
+    style Gemini2 fill:#E1D5E7,stroke:#9673A6,stroke-width:2px
+    style Gemini3 fill:#E1D5E7,stroke:#9673A6,stroke-width:2px
+    style Decision fill:#FFF2CC,stroke:#D6B656,stroke-width:2px
+    style User fill:#DAE8FC,stroke:#6C8EBF,stroke-width:2px
+```
+
 ## Getting Started
 
 ### Prerequisites
